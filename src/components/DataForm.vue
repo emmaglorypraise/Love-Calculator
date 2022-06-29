@@ -5,58 +5,41 @@ export default {
         firstName: '',
         secondName: '',
         result: [],
-        resultsArray: [],
-        nameBank: []
+        message: '',
     }
 
   },
   methods: {
     onSubmit(){
       if (!this.firstName && !this.secondName) {
-        // return;
         alert('Please fill both boxes to get accurate results');
       } else if (!this.firstName){
         alert("Please fill lady's name")
       } else if (!this.secondName){
         alert("Please fill guys's name")
       }  else {
-
-        this.nameBank.push(this.firstName + '' + this.secondName)
-      
-        this.getAPIResults()
-
-        // saves searched names in array
-        console.log(this.nameBank);
-      }
-      
-
-    },
-    getAPIResults() {
-      // sends get request to API
-      let result = '';
-      if (this.firstName == '' && this.secondName == ''){
-        console.log('e get why')
-      } else {
       let URL = `https://loverapi.herokuapp.com/api/v1/calculate?personA=${this.firstName}&personB=${this.secondName}`
       fetch(URL)
         .then(response => response.json())
-        .then(data => this.result = data)
-        console.log(this.result)
-      
-          this.resultsArray.push(this.result)
-          console.log('works')
-          console.log(this.resultsArray)
-        
+        .then(data => {
+          const newData = data;
+          this.result.push(newData);
+          this.message = newData;
+          //pushes to localstorage
+          localStorage.setItem('resultsArray', JSON.stringify(this.result))
+          })
 
-        //saves result to localStorage
-        if(this.resultsArray = []){
-          console.log('wont work')
-        } else {
-          localStorage.setItem('resultsArray', JSON.stringify(this.resultsArray))
-          console.log(this.result)
-          console.log(localStorage.getItem('resultsArray'))
+
+        // search if data exists
+         const  history = JSON.parse(localStorage.getItem('resultsArray'))
+         console.log(history)
+        if ( history.includes('Gloria')) {
+          console.log('working')
         }
+
       }
+      
+
     },
     reset() {
         this.firstName = '';
@@ -74,7 +57,7 @@ export default {
     <h2>Fill in the your name and the name of your partner and know your love rate!</h2>
     <form action="" @submit.prevent="onSubmit">
       <div>
-        <label for="first name">Name of Lady/woman is {{firstName}}</label>
+        <label for="first name">Name of Lady/woman is </label>
         <input 
           type="text"
           id="first name"
@@ -83,7 +66,7 @@ export default {
         >
       </div>
       <div>
-        <label for="second name">Name of Gentleman/Man is {{secondName}}</label>
+        <label for="second name">Name of Gentleman/Man is </label>
         <input 
           type="text"
           id="second name"
@@ -99,8 +82,8 @@ export default {
       </div>
       <div>
         <h1>Result:</h1>
-        <h2><span>Love Percentage: </span>{{this.result.result}}</h2>
-        <h2><span>Message: </span>{{this.result.message}}</h2>
+        <h2><span>Love Percentage: </span>{{this.message.result}}</h2>
+        <h2><span>Message: </span>{{this.message.message}}</h2>
       </div>
     </form>
   </section>
