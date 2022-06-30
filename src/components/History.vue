@@ -20,6 +20,6 @@ export default {
 
 <template>
   <section>
-    <p v-for="history in historys" :key="index">{{ history.message }}</p>
+    <p v-for="history in historys" :key="index">{{ history }}</p>
   </section>
 </template>

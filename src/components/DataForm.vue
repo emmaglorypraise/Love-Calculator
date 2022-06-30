@@ -1,4 +1,5 @@
 <script>
+
 export default {
   data() {
     return {
@@ -6,6 +7,7 @@ export default {
         secondName: '',
         result: [],
         message: '',
+        historys: ''
     }
 
   },
@@ -23,30 +25,30 @@ export default {
         .then(response => response.json())
         .then(data => {
           const newData = data;
-          this.result.push(newData);
+          this.result.push(newData.message);
           this.message = newData;
+
           //pushes to localstorage
           localStorage.setItem('resultsArray', JSON.stringify(this.result))
           })
 
 
         // search if data exists
-         const  history = JSON.parse(localStorage.getItem('resultsArray'))
-         console.log(history)
-        if ( history.includes('Gloria')) {
-          console.log('working')
-        }
+         this.historys = JSON.parse(localStorage.getItem('resultsArray'));
+         const searchResult = Object.entries(this.historys)
+         console.log(searchResult)
+
+         console.log(searchResult.includes('Gloria'))
+        
 
       }
-      
-
     },
     reset() {
         this.firstName = '';
         this.secondName = '';
         this.result = '';
     }
-  }
+  },
 }
   
 </script>
