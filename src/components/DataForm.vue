@@ -1,47 +1,80 @@
 <script>
-
 export default {
   data() {
     return {
         firstName: '',
         secondName: '',
-        result: [],
         message: '',
-        historys: ''
+        historys: '',
+        result: [],
     }
-
   },
   methods: {
     onSubmit(){
+      let checker =  JSON.parse(localStorage.getItem('resultsArray'));
       if (!this.firstName && !this.secondName) {
         alert('Please fill both boxes to get accurate results');
       } else if (!this.firstName){
         alert("Please fill lady's name")
       } else if (!this.secondName){
         alert("Please fill guys's name")
-      }  else {
-      let URL = `https://loverapi.herokuapp.com/api/v1/calculate?personA=${this.firstName}&personB=${this.secondName}`
+      }  else if (checker == null || checker == [] || checker == '') {
+      // if local storage is empty, runs api function
+        this.runAPI()
+      } else {
+      // if local storage is not empty, runs function to search 
+        this.checkAPI()
+      }
+    },
+    runAPI() {
+       let URL = `https://loverapi.herokuapp.com/api/v1/calculate?personA=${this.firstName}&personB=${this.secondName}`
       fetch(URL)
         .then(response => response.json())
         .then(data => {
           const newData = data;
-          this.result.push(newData.message);
+
+          // create an object for each search
+          const personsData = new Object();
+          personsData.personA = this.firstName;
+          personsData.personB = this.secondName;
+          personsData.msg = newData.message;
+          personsData.no = newData.result;
+          this.result.push(personsData);
           this.message = newData;
 
           //pushes to localstorage
           localStorage.setItem('resultsArray', JSON.stringify(this.result))
-          })
-
-
-        // search if data exists
+          });
+    },
+    checkAPI() {
+      // gets stored data from localstorage 
          this.historys = JSON.parse(localStorage.getItem('resultsArray'));
-         const searchResult = Object.entries(this.historys)
-         console.log(searchResult)
+         alert('Loading result...please wait')
+         let resultHistory = this.historys;
 
-         console.log(searchResult.includes('Gloria'))
-        
+        // filters localStorage and searches inputed value
+         function filterArray (array, key1, value1, key2, value2) {
+             return array.filter(function(e) {
+             return e[key1] == value1 && e[key2] == value2;
+          });
+         };
 
-      }
+        let theOne = filterArray(resultHistory, 'personA', `${this.firstName}`, 'personB', `${this.secondName}`)
+
+         if (theOne.length == 0){
+
+          //runs api if data is not there
+          alert('not found')
+          this.runAPI();
+         } else {
+
+          //displays if data exists
+          alert('Previous search result found')
+          console.log(theOne)
+          this.message = theOne[0];
+          this.message.message = theOne[0].msg;
+          this.message.result = theOne[0].no;
+         }
     },
     reset() {
         this.firstName = '';
@@ -49,8 +82,7 @@ export default {
         this.result = '';
     }
   },
-}
-  
+} 
 </script>
 
 <template>
